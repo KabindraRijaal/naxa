@@ -12,7 +12,13 @@ import "leaflet.vectorgrid";
 
 const { Overlay } = LayersControl;
 
-const VectorTileLayer = ({ url }) => {
+declare module 'leaflet' {
+  namespace vectorGrid {
+    function protobuf(url: string, options?: any): L.Layer;
+  }
+}
+
+const VectorTileLayer = ({ url }: { url: string }) => {
   const map = useMap();
 
   useEffect(() => {
@@ -41,7 +47,6 @@ const VectorTileLayer = ({ url }) => {
 };
 
 const MapComponent = () => {
-
   const layerUrls = {
     province:
       "https://vectortile.naxa.com.np/federal/province.mvt/?tile={z}/{x}/{y}",
@@ -51,8 +56,33 @@ const MapComponent = () => {
       "https://vectortile.naxa.com.np/federal/municipality.mvt/?tile={z}/{x}/{y}",
   };
 
+  const [activeLayer, setActiveLayer] =
+    useState<keyof typeof layerUrls>("province");
+
   return (
-    <div>      
+    <div className="container mx-auto max-w-[1270px] mt-28 mb-28">
+      <div className="flex justify-end mb-2">
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setActiveLayer("province")}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm py-2 px-3 rounded transition duration-300 ease-in-out"
+          >
+            Province Layer
+          </button>
+          <button
+            onClick={() => setActiveLayer("district")}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm py-2 px-3 rounded transition duration-300 ease-in-out"
+          >
+            District Layer
+          </button>
+          <button
+            onClick={() => setActiveLayer("municipality")}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium text-sm py-2 px-3 rounded transition duration-300 ease-in-out"
+          >
+            Municipality Layer
+          </button>
+        </div>
+      </div>
       <MapContainer
         center={[27.7, 85.3]} // Centered over Nepal
         zoom={7}
@@ -63,22 +93,8 @@ const MapComponent = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        <LayersControl position="topright">
-          <LayersControl.Overlay name="teehe">
-            <VectorTileLayer url={layerUrls.province} />
-          </LayersControl.Overlay>
-          <Overlay checked name="provience">
-            <VectorTileLayer url={layerUrls.province} />
-          </Overlay>
-          <Overlay name="district">
-            <VectorTileLayer url={layerUrls.district} />
-          </Overlay>
-          <Overlay name="municipality">
-            <VectorTileLayer url={layerUrls.municipality} />
-          </Overlay>
-        </LayersControl>
+        <VectorTileLayer url={layerUrls[activeLayer]} />
       </MapContainer>
-      {layerUrls.province}
     </div>
   );
 };

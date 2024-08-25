@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 export const Modal = ({
   image,
@@ -15,11 +15,29 @@ export const Modal = ({
   client: string;
   period: string;
   focus: string;
-  setIsModalOpen:any;
+  setIsModalOpen: (isOpen: boolean) => void;
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      setIsModalOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative bg-white rounded-lg  h-[596px] md:w-[1000px] overflow-y-auto">
+      <div
+        ref={modalRef}
+        className="relative bg-white rounded-lg h-[596px] md:w-[1000px] overflow-y-auto"
+      >
         <button
           onClick={() => setIsModalOpen(false)}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -61,14 +79,15 @@ export const Modal = ({
                 {period}
               </div>
               <div>
-                <span className="font-semibold text-yellow-500">
-                  Focus Area:{" "}
-                </span>
-                {
-                    focus?.length> 0 && focus.map((item: string) => {
-                        return <span className="text-gray-500">{item}</span>
-                    })
-                }
+                <span className="font-semibold text-yellow-500">Focus Area: </span>
+                {Array.isArray(focus) && focus.length > 0
+                  ? focus.map((item: string, index: number) => (
+                      <span key={index} className="text-gray-500 ml-1">
+                        {item}
+                        {index < focus.length - 1 ? ", " : ""}
+                      </span>
+                    ))
+                  : focus}
               </div>
             </div>
           </div>

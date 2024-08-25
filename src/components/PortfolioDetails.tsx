@@ -6,14 +6,12 @@ import { Modal } from "./portfolio/Modal";
 const Card = ({
   title,
   clients,
-  description,
-  focus_area,
   start_date,
   end_date,
   subtitle,
   photo,
+  setIsModalOpen,
 }: any) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div
       className="flex flex-col overflow-hidden shadow-lg bg-white h-full"
@@ -36,17 +34,7 @@ const Card = ({
         </div>
       </div>
       <img src={photo} alt="Project" className="" />
-      {isModalOpen && (
-        <Modal
-          focus={focus_area}
-          image={photo}
-          title={title}
-          description={description}
-          client={clients}
-          period={start_date + " - " + end_date}
-          setIsModalOpen={setIsModalOpen}
-        />
-      )}
+      
     </div>
   );
 };
@@ -55,6 +43,13 @@ const PortfolioDetails = () => {
   const { keyHighlightData } = useSelector(
     (state: RootState) => state.portfolioData
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<any>(null);
+
+  const handleCardClick = (card: any) => {
+    setSelectedCard(card);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="container mx-auto py-48">
@@ -63,14 +58,27 @@ const PortfolioDetails = () => {
           keyHighlightData.map((card: any, index: any) => (
             <div
               key={index}
-              className="mb-8 w-[375px] h-[717px]  xl:w-[620px] xl:h-[730px]"
+              className="mb-8 w-[375px] h-[717px] xl:w-[620px] xl:h-[730px]"
+              onClick={() => handleCardClick(card)}
             >
               <Card {...card} />
             </div>
           ))}
       </div>
+      {isModalOpen && selectedCard && (
+        <Modal
+          focus={selectedCard.focus_area}
+          image={selectedCard.photo}
+          title={selectedCard.title}
+          description={selectedCard.description}
+          client={selectedCard.clients}
+          period={selectedCard.start_date + " - " + selectedCard.end_date}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
     </div>
   );
 };
 
 export default PortfolioDetails;
+

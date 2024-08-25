@@ -12,7 +12,7 @@ import "leaflet.vectorgrid";
 
 const { Overlay } = LayersControl;
 
-declare module 'leaflet' {
+declare module "leaflet" {
   namespace vectorGrid {
     function protobuf(url: string, options?: any): L.Layer;
   }
@@ -60,7 +60,7 @@ const MapComponent = () => {
     useState<keyof typeof layerUrls>("province");
 
   return (
-    <div className="container mx-auto max-w-[1270px] mt-28 mb-28">
+    <div className="container mx-auto max-w-[1270px] px-4 sm:px-6 lg:px-8 mt-12 mb-12 sm:mt-16 sm:mb-16 md:mt-20 md:mb-20 lg:mt-24 lg:mb-24 xl:mt-28 xl:mb-28">
       <div className="flex justify-end mb-2">
         <div className="flex space-x-2">
           <button
